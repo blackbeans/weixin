@@ -13,7 +13,7 @@ const (
 
 func main() {
 
-	pool := mongo.NewDialPool("42.121.2.69:27018", 1000)
+	pool := mongo.NewDialPool("localhost:27018", 1000)
 
 	var i int = 1
 	chs := make([]chan bool, 50)
