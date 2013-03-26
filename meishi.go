@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"net/http/httputil"
+	"net/url"
 	"time"
 )
 
@@ -54,7 +56,8 @@ type PicResponse struct {
 }
 
 const (
-	basiurl = "http://redis.io/commands/"
+	basiurl    = "http://redis.io/commands/"
+	forwardurl = "http://localhost:8080/"
 )
 
 var pool *mongo.Pool
@@ -65,8 +68,19 @@ func init() {
 
 func main() {
 	http.HandleFunc("/", WelcomeHandler)
-	http.HandleFunc("/weixin", WelcomeHandler)
+
+	http.HandleFunc("/weixin", ForwardHandler)
 	http.ListenAndServe(":80", nil)
+}
+
+func ForwardHandler(wr http.ResponseWriter, req *http.Request) {
+	link, err := url.Parse(forwardurl)
+	if nil != err {
+		panic(err)
+	}
+	proxy := httputil.NewSingleHostReverseProxy(link)
+	proxy.ServeHTTP(wr, req)
+
 }
 
 func WelcomeHandler(resp http.ResponseWriter, req *http.Request) {
@@ -101,12 +115,28 @@ func WelcomeHandler(resp http.ResponseWriter, req *http.Request) {
 	conn, _ := pool.Get()
 	db := &mongo.Database{conn, "meishi", mongo.DefaultLastErrorCmd}
 	coll := db.C("foods")
-	cursor, _ := coll.Find(mongo.M{"name": mongo.M{"$regx": code}}).Limit(1).Cursor()
-	var m mongo.M
-	if cursor.HasNext() {
-		cursor.Next(&m)
+	cursor, err := coll.Find(mongo.M{"name": mongo.M{"$regex": code}}).Limit(10).Cursor()
+	if nil != err {
+		panic(err)
 	}
-	if nil == m {
+	defer cursor.Close()
+	foods := make([]mongo.M, 0)
+	i := 0
+
+	for cursor.HasNext() && i < 10 {
+		var m mongo.M
+		err := cursor.Next(&m)
+		if nil != err {
+			log.Panicln("decode mongo map fail", err)
+			continue
+		}
+
+		foods = append(foods, m)
+		log.Println(m)
+		i++
+	}
+
+	if i <= 0 {
 		response := &TxtResponse{}
 		response.FromUserName = request.ToUserName
 		response.ToUserName = request.FromUserName
@@ -118,14 +148,19 @@ func WelcomeHandler(resp http.ResponseWriter, req *http.Request) {
 		write(resp, response)
 	} else {
 		response := &PicResponse{}
-		item := &Item{}
-		item.Title = m["name"].(string)
-		item.PicUrl = m["img_url"].(string)
-		item.Url = m["link"].(string)
-		item.Description = m["name"].(string)
+		items := make([]*Item, 0)
 
-		items := make([]*Item, 1)
-		items[0] = item
+		for _, m := range foods {
+
+			log.Println("food:", m)
+			item := &Item{}
+			item.Title = m["name"].(string)
+			item.PicUrl = m["img_url"].(string)
+			item.Url = m["link"].(string)
+			item.Description = m["name"].(string)
+			items = append(items, item)
+		}
+
 		art := &Articles{}
 		art.Items = items
 		response.Articles = art
@@ -134,7 +169,7 @@ func WelcomeHandler(resp http.ResponseWriter, req *http.Request) {
 		response.MsgType = "news"
 		response.FuncFlag = 1
 		response.CreateTime = time.Duration(time.Now().Unix())
-		response.ArticleCount = 1
+		response.ArticleCount = len(foods)
 		write(resp, response)
 	}
 
