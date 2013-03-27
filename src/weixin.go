@@ -19,14 +19,22 @@ const (
 	basiurl    = "http://redis.io/commands/"
 	forwardurl = "http://localhost:8080/"
 	token      = "betago"
-	welcome    = "欢迎使用美食助手应用，您可以属于希望的文字获得美食,愿你在这里发现生活真正的意义~业务合作微信账号:blackbeans"
+	welcome    = "欢迎使用美食助手应用，您可以属于希望的文字获得美食、发送地理位置可以查询附近餐馆哦！愿你在这里发现生活真正的意义~业务合作微信账号:blackbeans"
 )
 
 var pool *mongo.Pool
 
 func init() {
-	pool = mongo.NewDialPool("localhost:27018", 1000)
+	pool = mongo.NewDialPool("42.96.167.9:27018", 1000)
 }
+
+// func main() {
+
+// 	msg := entry.LocRequest{}
+// 	msg.Location_X = 23.312
+// 	msg.Location_Y = 120.8
+// 	locMessageProcess(msg, nil)
+// }
 
 func main() {
 	http.HandleFunc("/weixin", WexinHandler)
@@ -105,6 +113,17 @@ func WexinHandler(resp http.ResponseWriter, req *http.Request) {
 			//取消订阅
 			go unsubEventProcess(*request, ch)
 
+		} else if "location" == msgType {
+			//地理位置
+			var msg entry.LocRequest
+			err := xml.Unmarshal(data, msg)
+			if nil != err {
+				log.Println("decode txt request body err:", er)
+				return
+			}
+
+			go locMessageProcess(msg, ch)
+
 		} else {
 			var msg entry.TxtRequest
 			err := xml.Unmarshal(data, &msg)
@@ -122,13 +141,38 @@ func WexinHandler(resp http.ResponseWriter, req *http.Request) {
 	}
 }
 
+func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
+	conn, _ := pool.Get()
+	db := &mongo.Database{conn, "search", mongo.DefaultLastErrorCmd}
+	coll := db.C("resturant")
+	cond := mongo.M{"$near": mongo.A{msg.Location_X, msg.Location_Y}}
+	fields := mongo.M{"name": 1, "province": 1, "city": 1, "district": 1, "_id": 0, "description.tel": 1}
+	cursor, err := coll.Find(mongo.M{"geoloc": cond}).Fields(fields).Limit(1).Cursor()
+	if nil != err {
+		log.Println("query mongo fail |", err)
+		return
+	}
+
+	defer cursor.Close()
+
+	locs := traverseQueryResult(cursor, 10)
+	resp := buildCoverPicMsg(msg.ReqMessage)
+	for _, val := range locs {
+		shop := resp.Articles.Items[0]
+		shop.Title = fmt.Sprintf("离你最近的餐馆 ：%x(电话:%x)", val["name"].(string), val["tel"].(string))
+		shop.Description = fmt.Sprintf("地址:%s,%s,%s", val["province"], val["city"], val["district"])
+	}
+	ch <- resp
+
+}
+
 func subEventProcess(msg entry.ReqMessage, ch chan interface{}) {
 	resp := buildCoverPicMsg(msg)
 	ch <- resp
 }
 
 func unsubEventProcess(msg entry.ReqMessage, ch chan interface{}) {
-	resp := buildTxtMsg("感谢您的关注，希望您下次继续光顾本应用^_^!", msg.MsgType)
+	resp := buildTxtMsg("感谢您的关注，希望您下次继续光顾本应用^_^!", "text")
 	resp.FromUserName = msg.ToUserName
 	resp.ToUserName = msg.FromUserName
 	ch <- *resp
@@ -182,6 +226,11 @@ func query(limit int, code string) []mongo.M {
 	}
 
 	defer cursor.Close()
+
+	return traverseQueryResult(cursor, limit)
+}
+
+func traverseQueryResult(cursor mongo.Cursor, limit int) []mongo.M {
 	foods := make([]mongo.M, 0)
 	i := 0
 

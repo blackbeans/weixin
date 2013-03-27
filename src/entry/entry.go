@@ -29,6 +29,14 @@ type TxtRequest struct {
 	MsgId   int
 }
 
+type LocRequest struct {
+	ReqMessage
+	Location_X float64
+	Location_Y float64
+	Scale      int32
+	Label      string
+}
+
 type TxtResponse struct {
 	XMLName xml.Name `xml:"xml"`
 	RespMessage
