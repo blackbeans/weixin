@@ -19,7 +19,7 @@ const (
 	basiurl    = "http://redis.io/commands/"
 	forwardurl = "http://localhost:8080/"
 	token      = "betago"
-	welcome    = "欢迎使用美食助手应用，愿你在这里发现生活真正的意义~<br/>业务合作联系:blackbeans.zc@gmail.com"
+	welcome    = "欢迎使用美食助手应用，您可以属于希望的文字获得美食,愿你在这里发现生活真正的意义~业务合作微信账号:blackbeans"
 )
 
 var pool *mongo.Pool
@@ -98,7 +98,12 @@ func WexinHandler(resp http.ResponseWriter, req *http.Request) {
 		ch := make(chan interface{})
 		defer close(ch)
 		if "event" == msgType && event == "subscribe" {
-			go eventProcess(*request, ch)
+			//添加关注事件
+			go subEventProcess(*request, ch)
+
+		} else if "event" == msgType && event == "unsubscribe" {
+			//取消订阅
+			go unsubEventProcess(*request, ch)
 
 		} else {
 			var msg entry.TxtRequest
@@ -117,9 +122,16 @@ func WexinHandler(resp http.ResponseWriter, req *http.Request) {
 	}
 }
 
-func eventProcess(msg entry.ReqMessage, ch chan interface{}) {
+func subEventProcess(msg entry.ReqMessage, ch chan interface{}) {
 	resp := buildCoverPicMsg(msg)
 	ch <- resp
+}
+
+func unsubEventProcess(msg entry.ReqMessage, ch chan interface{}) {
+	resp := buildTxtMsg("感谢您的关注，希望您下次继续光顾本应用^_^!", msg.MsgType)
+	resp.FromUserName = msg.ToUserName
+	resp.ToUserName = msg.FromUserName
+	ch <- *resp
 }
 
 func txtMessageProcess(msg entry.TxtRequest, ch chan interface{}) {
@@ -127,15 +139,10 @@ func txtMessageProcess(msg entry.TxtRequest, ch chan interface{}) {
 	foods := query(10, code)
 	var response interface{}
 	if len(foods) <= 0 {
-		resp := &entry.TxtResponse{}
+		resp := buildTxtMsg("很遗憾你是吃货，没找到你的美食,你可以搜索爆米花!", msg.MsgType)
 		resp.FromUserName = msg.ToUserName
 		resp.ToUserName = msg.FromUserName
-		resp.MsgType = msg.MsgType
-		resp.FuncFlag = 0
-		resp.Content = "很遗憾你是吃货，没找到你的美食,你可以搜索爆米花!"
-		resp.CreateTime = time.Duration(time.Now().Unix())
-		response = resp
-
+		response = *resp
 	} else {
 		resp := &entry.PicResponse{}
 		items := make([]*entry.Item, 0)
@@ -190,6 +197,15 @@ func query(limit int, code string) []mongo.M {
 		i++
 	}
 	return foods
+}
+
+func buildTxtMsg(content string, msgType string) *entry.TxtResponse {
+	resp := &entry.TxtResponse{}
+	resp.MsgType = msgType
+	resp.FuncFlag = 0
+	resp.Content = content
+	resp.CreateTime = time.Duration(time.Now().Unix())
+	return resp
 }
 
 func buildCoverPicMsg(msg entry.ReqMessage) entry.PicResponse {
