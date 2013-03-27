@@ -1,0 +1,12 @@
+{
+	"gopath":"/Users/Xmx/workspace/google/weixin",
+    "folders": [
+        {
+            "path": "/Users/Xmx/workspace/google/weixin"
+        }
+    ], 
+    "settings": {
+        "go_project": true, 
+        "name": "weixin"
+    }
+}
