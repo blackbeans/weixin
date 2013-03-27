@@ -2,6 +2,6 @@
 go build weixin.go
 ps uax | grep weixin | awk 'NR==FNR{system("kill "$2) }'
 
-sleep 10
+sleep 5
 
-nohup ./weixin >> stdout.log 2>&1 &
+nohup ./$GOPATH/bin/weixin >> stdout.log 2>&1 &
