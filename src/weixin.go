@@ -116,9 +116,9 @@ func WexinHandler(resp http.ResponseWriter, req *http.Request) {
 		} else if "location" == msgType {
 			//地理位置
 			var msg entry.LocRequest
-			err := xml.Unmarshal(data, msg)
+			err := xml.Unmarshal(data, &msg)
 			if nil != err {
-				log.Println("decode txt request body err:", er)
+				log.Println("decode txt request body err:", err)
 				return
 			}
 
@@ -155,11 +155,13 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 
 	defer cursor.Close()
 
-	locs := traverseQueryResult(cursor, 10)
+	locs := traverseQueryResult(cursor, 1)
 	resp := buildCoverPicMsg(msg.ReqMessage)
 	for _, val := range locs {
+		// fmt.Println(val)
 		shop := resp.Articles.Items[0]
-		shop.Title = fmt.Sprintf("离你最近的餐馆 ：%x(电话:%x)", val["name"].(string), val["tel"].(string))
+		desc := val["description"].(map[string]interface{})
+		shop.Title = fmt.Sprintf("离你最近的餐馆 :%s(电话:%s)", val["name"], desc["tel"])
 		shop.Description = fmt.Sprintf("地址:%s,%s,%s", val["province"], val["city"], val["district"])
 	}
 	ch <- resp
