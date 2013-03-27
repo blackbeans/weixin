@@ -112,6 +112,7 @@ func WexinHandler(resp http.ResponseWriter, req *http.Request) {
 		}
 
 		brespons, _ := xml.Marshal(<-ch)
+		log.Println(string(brespons))
 		resp.Write(brespons)
 	}
 }
