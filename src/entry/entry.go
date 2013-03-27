@@ -16,8 +16,7 @@ type ReqMessage struct {
 }
 
 type RespMessage struct {
-	XMLName      xml.Name `xml:"xml"`
-	ToUserName   string   // base struct
+	ToUserName   string // base struct
 	FromUserName string
 	MsgType      string
 	CreateTime   time.Duration
@@ -31,8 +30,16 @@ type TxtRequest struct {
 }
 
 type TxtResponse struct {
+	XMLName xml.Name `xml:"xml"`
 	RespMessage
 	Content string
+}
+
+type PicResponse struct {
+	XMLName xml.Name `xml:"xml"`
+	RespMessage
+	ArticleCount int
+	Articles     *Articles
 }
 
 type Item struct {
@@ -43,12 +50,6 @@ type Item struct {
 }
 
 type Articles struct {
-	Articles xml.Name `xml:"Articles"`
-	Items    []*Item  `xml:"item"`
-}
-
-type PicResponse struct {
-	RespMessage
-	ArticleCount int
-	Articles     *Articles
+	// Articles xml.Name `xml:"Articles"`
+	Items []*Item `xml:"item"`
 }
