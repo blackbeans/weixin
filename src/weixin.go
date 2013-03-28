@@ -158,8 +158,8 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 
 	locs := traverseQueryResult(cursor, 10)
 
-	rand.Seed(int64(len(locs)))
-	loc := locs[rand.Int()]
+	idx := rand.Intn(len(locs))
+	loc := locs[idx]
 	resp := buildCoverPicMsg(msg.ReqMessage)
 	// fmt.Println(val)
 	shop := resp.Articles.Items[0]
@@ -266,9 +266,11 @@ func buildCoverPicMsg(msg entry.ReqMessage) entry.PicResponse {
 	resp := entry.PicResponse{}
 	items := make([]*entry.Item, 0)
 
-	foods := query(1, "豆腐")
-	if len(foods) == 1 {
-		m := foods[0]
+	foods := query(10, "豆腐")
+
+	if len(foods) >= 1 {
+		idx := rand.Intn(len(foods))
+		m := foods[idx]
 		item := &entry.Item{}
 		item.Title = m["name"].(string)
 		item.PicUrl = m["img_url"].(string)
@@ -285,7 +287,7 @@ func buildCoverPicMsg(msg entry.ReqMessage) entry.PicResponse {
 	resp.MsgType = "news"
 	resp.FuncFlag = 1
 	resp.CreateTime = time.Duration(time.Now().Unix())
-	resp.ArticleCount = len(foods)
+	resp.ArticleCount = 1
 
 	return resp
 }
