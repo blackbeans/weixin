@@ -4,16 +4,80 @@
 		"selected_items":
 		[
 			[
+				"sp",
+				"Sprintf	string ƒ"
+			],
+			[
+				"Sp",
+				"Sprintf	string ƒ"
+			],
+			[
+				"F",
+				"Fprintln	n int, err error ƒ"
+			],
+			[
+				"sh",
+				"shop	*entry.Item ν"
+			],
+			[
+				"bui",
+				"buildCoverPicMsg	entry.PicResponse ƒ"
+			],
+			[
+				"lo",
+				"Location_X	float64 ν"
+			],
+			[
+				"l",
+				"Location_Y	float64 ν"
+			],
+			[
+				"pr",
+				"Println	n int, err error ƒ"
+			],
+			[
+				"c",
+				"Cursor	mongo.Cursor, error ƒ"
+			],
+			[
+				"prin",
+				"Println	 ƒ"
+			],
+			[
+				"co",
+				"cond	mongo.M ν"
+			],
+			[
+				"ms",
+				"MsgType	string ν"
+			],
+			[
+				"fun",
+				"func	func {...} ʂ"
+			],
+			[
+				"rq",
+				"request	*entry.ReqMessage ν"
+			],
+			[
+				"tx",
+				"TxtResponse	struct ʈ"
+			],
+			[
+				"T",
+				"TxtResponse	struct ʈ"
+			],
+			[
+				"re",
+				"request	*entry.ReqMessage ν"
+			],
+			[
 				"im",
 				"import	import (...) ʂ"
 			],
 			[
 				"v",
 				"weixinValid	 ƒ"
-			],
-			[
-				"re",
-				"resp	http.ResponseWriter ν"
 			],
 			[
 				"Fr",
@@ -52,10 +116,6 @@
 				"NewSingleHostReverseProxy	*httputil.ReverseProxy ƒ"
 			],
 			[
-				"l",
-				"link	*url.URL ν"
-			],
-			[
 				"news",
 				"NewSingleHostReverseProxy	*httputil.ReverseProxy ƒ"
 			],
@@ -66,10 +126,6 @@
 			[
 				"print",
 				"Println	 ƒ"
-			],
-			[
-				"co",
-				"StatusCode	int ν"
 			],
 			[
 				"ite",
@@ -84,10 +140,6 @@
 				"items	[]*Item ν"
 			],
 			[
-				"c",
-				"Count	int64, error ƒ"
-			],
-			[
 				"resp",
 				"response	*PicResponse ν"
 			],
@@ -98,10 +150,6 @@
 			[
 				"di",
 				"NewDialPool	*mongo.Pool ƒ"
-			],
-			[
-				"fun",
-				"func	Function"
 			],
 			[
 				"new",
@@ -129,10 +177,6 @@
 			],
 			[
 				"Fi",
-				"Find	goquery.Nodes ƒ"
-			],
-			[
-				"F",
 				"Find	goquery.Nodes ƒ"
 			],
 			[
@@ -178,10 +222,6 @@
 			[
 				"Sta",
 				"StatusOK	 Ɩ"
-			],
-			[
-				"prin",
-				"Printf	 ƒ"
 			],
 			[
 				"tol",
@@ -290,10 +330,6 @@
 			[
 				"fil",
 				"FileMode	uint32 ʈ"
-			],
-			[
-				"pr",
-				"Println	 ƒ"
 			],
 			[
 				"buf",
@@ -478,47 +514,36 @@
 			[
 				"Pi",
 				"Println	n int, err error ƒ"
-			],
-			[
-				"int",
-				"ParseInt	i int64, err error ƒ"
-			],
-			[
-				"line",
-				"lineraw	[]byte ν"
-			],
-			[
-				"st",
-				"strconv	 package ρ"
-			],
-			[
-				"Pla",
-				"Player	*Mp3Player ν"
-			],
-			[
-				"No",
-				"Now	time.Time ƒ"
-			],
-			[
-				"pn",
-				"Println	n int, err error ƒ"
-			],
-			[
-				"Prn",
-				"Println	n int, err error ƒ"
-			],
-			[
-				"GO",
-				"GOPATHs"
-			],
-			[
-				"err",
-				"err2	error ν"
 			]
 		]
 	},
 	"buffers":
 	[
+		{
+			"file": "src/weixin.go",
+			"settings":
+			{
+				"buffer_size": 6657,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "mongod --dbpath /home/server/mongo/data --port 27018 --logpath /home/server/mongolog/mongo.log\n\n\nmongorestore -host localhost:27018 -d search --directoryperdb  resturant/search/\n\ndb.Account.renameCollection",
+			"settings":
+			{
+				"buffer_size": 206,
+				"line_ending": "Unix",
+				"name": "mongod --dbpath /home/server/mongo/data --port 270"
+			}
+		},
+		{
+			"file": "src/entry/entry.go",
+			"settings":
+			{
+				"buffer_size": 999,
+				"line_ending": "Unix"
+			}
+		}
 	],
 	"build_system": "",
 	"command_palette":
@@ -527,16 +552,68 @@
 		"selected_items":
 		[
 			[
+				"git comm",
+				"Git: Commit"
+			],
+			[
+				"gitadd",
+				"Git: Add..."
+			],
+			[
+				"git",
+				"Git: Pull"
+			],
+			[
+				"git push",
+				"Git: Push"
+			],
+			[
+				"git pull",
+				"Git: Pull"
+			],
+			[
+				"git co",
+				"Git: Commit"
+			],
+			[
+				"git ",
+				"Git: Gui"
+			],
+			[
+				"git pu",
+				"Git: Push"
+			],
+			[
+				"git pus",
+				"Git: Push"
+			],
+			[
+				"git add",
+				"Git: Add Current File"
+			],
+			[
+				"git di",
+				"Git: Diff Tool Current File"
+			],
+			[
+				"git dif",
+				"Git: Diff Current File"
+			],
+			[
+				"gitdif",
+				"Git: Diff All"
+			],
+			[
+				"gitdi",
+				"Git: Diff Current File"
+			],
+			[
 				"git sta",
 				"Git: Status"
 			],
 			[
 				"git stat",
 				"Git: Status"
-			],
-			[
-				"git ",
-				"Git: New Tag"
 			],
 			[
 				"re",
@@ -688,6 +765,15 @@
 	},
 	"file_history":
 	[
+		"/Users/Xmx/workspace/google/weixin/src/entry/entry.go",
+		"/Users/Xmx/workspace/google/weixin/src/start.sh",
+		"/Users/Xmx/workspace/google/weixin/src/weixin.go",
+		"/Users/Xmx/workspace/google/weixin/src/main.go",
+		"/Users/Xmx/Library/Application Support/Sublime Text 2/Packages/Git/Git.sublime-settings",
+		"/Users/Xmx/workspace/google/weixin/src/entry/main.go",
+		"/Users/Xmx/Library/Application Support/Sublime Text 2/Packages/GoSublime/GoSublime.sublime-settings",
+		"/Users/Xmx/Library/Application Support/Sublime Text 2/Packages/User/GoSublime.sublime-settings",
+		"/Users/Xmx/workspace/google/weixin/weixin.sublime-project",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/main/weixin/entry.go",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/main/weixin/meishi.go",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/main/weixin/crawler2.go",
@@ -742,8 +828,6 @@
 		"/usr/local/go/src/pkg/io/ioutil/ioutil.go",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/ipc/server.go",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/ipc/client_test.go",
-		"/Users/Xmx/Library/Application Support/Sublime Text 2/Packages/User/GoSublime.sublime-settings",
-		"/Users/Xmx/Library/Application Support/Sublime Text 2/Packages/GoSublime/GoSublime.sublime-settings",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/ipc/centerserver_test.go",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/ipc/centerserver_test.g",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/entry/entry.go",
@@ -881,8 +965,401 @@
 	"groups":
 	[
 		{
+			"selected": 0,
 			"sheets":
 			[
+				{
+					"buffer": 0,
+					"file": "src/weixin.go",
+					"settings":
+					{
+						"buffer_size": 6657,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								3930,
+								3930
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"incomplete_sync": null,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"remote_loading": false,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"synced": false,
+							"syntax": "Packages/GoSublime/GoSublime.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 3643.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"settings":
+					{
+						"buffer_size": 206,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								190,
+								206
+							]
+						],
+						"settings":
+						{
+							"auto_name": "mongod --dbpath /home/server/mongo/data --port 270",
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"incomplete_sync": null,
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "src/entry/entry.go",
+					"settings":
+					{
+						"buffer_size": 999,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								999
+							]
+						],
+						"settings":
+						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
+							"bh_regions":
+							[
+								"bh_regex",
+								"bh_regex_center",
+								"bh_regex_open",
+								"bh_regex_close",
+								"bh_double_quote",
+								"bh_double_quote_center",
+								"bh_double_quote_open",
+								"bh_double_quote_close",
+								"bh_square",
+								"bh_square_center",
+								"bh_square_open",
+								"bh_square_close",
+								"bh_angle",
+								"bh_angle_center",
+								"bh_angle_open",
+								"bh_angle_close",
+								"bh_curly",
+								"bh_curly_center",
+								"bh_curly_open",
+								"bh_curly_close",
+								"bh_default",
+								"bh_default_center",
+								"bh_default_open",
+								"bh_default_close",
+								"bh_unmatched",
+								"bh_unmatched_center",
+								"bh_unmatched_open",
+								"bh_unmatched_close",
+								"bh_round",
+								"bh_round_center",
+								"bh_round_open",
+								"bh_round_close",
+								"bh_tag",
+								"bh_tag_center",
+								"bh_tag_open",
+								"bh_tag_close",
+								"bh_single_quote",
+								"bh_single_quote_center",
+								"bh_single_quote_open",
+								"bh_single_quote_close"
+							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
+							"incomplete_sync": null,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"remote_loading": false,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"synced": false,
+							"syntax": "Packages/GoSublime/GoSublime.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 404.0,
+						"zoom_level": 1.0
+					},
+					"type": "text"
+				}
 			]
 		}
 	],
@@ -925,6 +1402,22 @@
 	{
 		"height": 246.0
 	},
+	"output.9o:///Users/Xmx/workspace/google/weixin":
+	{
+		"height": 100.0
+	},
+	"output.9o:///Users/Xmx/workspace/google/weixin/entry":
+	{
+		"height": 100.0
+	},
+	"output.9o:///Users/Xmx/workspace/google/weixin/src":
+	{
+		"height": 100.0
+	},
+	"output.9o:///Users/Xmx/workspace/google/weixin/src/entry":
+	{
+		"height": 100.0
+	},
 	"output.GsDepends-output":
 	{
 		"height": 100.0
@@ -939,7 +1432,7 @@
 	},
 	"output.git":
 	{
-		"height": 100.0
+		"height": 162.0
 	},
 	"output.gscommander:///Users/Xmx/workspace/google/musicplayer/src/com.blackbeans/entry":
 	{

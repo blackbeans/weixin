@@ -8,6 +8,7 @@ import (
 	"github.com/garyburd/go-mongo/mongo"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"net/http/httputil"
 	"net/url"
@@ -155,15 +156,17 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 
 	defer cursor.Close()
 
-	locs := traverseQueryResult(cursor, 1)
+	locs := traverseQueryResult(cursor, 10)
+
+	rand.Seed(int64(len(locs)))
+	loc := locs[rand.Int()]
 	resp := buildCoverPicMsg(msg.ReqMessage)
-	for _, val := range locs {
-		// fmt.Println(val)
-		shop := resp.Articles.Items[0]
-		desc := val["description"].(map[string]interface{})
-		shop.Title = fmt.Sprintf("离你最近的餐馆 :%s(电话:%s)", val["name"], desc["tel"])
-		shop.Description = fmt.Sprintf("地址:%s,%s,%s", val["province"], val["city"], val["district"])
-	}
+	// fmt.Println(val)
+	shop := resp.Articles.Items[0]
+	desc := loc["description"].(map[string]interface{})
+	shop.Title = fmt.Sprintf("离你最近的餐馆 :%s(电话:%s)", loc["name"], desc["tel"])
+	shop.Description = fmt.Sprintf("地址:%s,%s,%s", loc["province"], loc["city"], loc["district"])
+
 	ch <- resp
 
 }
@@ -263,7 +266,7 @@ func buildCoverPicMsg(msg entry.ReqMessage) entry.PicResponse {
 	resp := entry.PicResponse{}
 	items := make([]*entry.Item, 0)
 
-	foods := query(1, "甜点")
+	foods := query(1, "豆腐")
 	if len(foods) == 1 {
 		m := foods[0]
 		item := &entry.Item{}
