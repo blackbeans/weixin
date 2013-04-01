@@ -4,6 +4,14 @@
 		"selected_items":
 		[
 			[
+				"in",
+				"Intn	int ƒ"
+			],
+			[
+				"lo",
+				"locs	[]mongo.M ν"
+			],
+			[
 				"sp",
 				"Sprintf	string ƒ"
 			],
@@ -22,10 +30,6 @@
 			[
 				"bui",
 				"buildCoverPicMsg	entry.PicResponse ƒ"
-			],
-			[
-				"lo",
-				"Location_X	float64 ν"
 			],
 			[
 				"l",
@@ -510,10 +514,6 @@
 			[
 				"mus",
 				"music	 ν"
-			],
-			[
-				"Pi",
-				"Println	n int, err error ƒ"
 			]
 		]
 	},
@@ -523,7 +523,7 @@
 			"file": "src/weixin.go",
 			"settings":
 			{
-				"buffer_size": 6657,
+				"buffer_size": 6710,
 				"line_ending": "Unix"
 			}
 		},
@@ -973,15 +973,15 @@
 					"file": "src/weixin.go",
 					"settings":
 					{
-						"buffer_size": 6657,
+						"buffer_size": 6710,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3930,
-								3930
+								3471,
+								3471
 							]
 						],
 						"settings":
@@ -1124,7 +1124,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 3643.0,
+						"translation.y": 737.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1146,6 +1146,12 @@
 						],
 						"settings":
 						{
+							"annotations":
+							[
+								"TODO",
+								"README",
+								"FIXME"
+							],
 							"auto_name": "mongod --dbpath /home/server/mongo/data --port 270",
 							"bh_regions":
 							[
@@ -1190,7 +1196,91 @@
 								"bh_single_quote_open",
 								"bh_single_quote_close"
 							],
+							"csslint_options":
+							{
+								"adjoining-classes": "warning",
+								"box-model": true,
+								"box-sizing": "warning",
+								"compatible-vendor-prefixes": "warning",
+								"display-property-grouping": true,
+								"duplicate-background-images": "warning",
+								"duplicate-properties": true,
+								"empty-rules": true,
+								"errors": true,
+								"fallback-colors": "warning",
+								"floats": "warning",
+								"font-faces": "warning",
+								"font-sizes": "warning",
+								"gradients": "warning",
+								"ids": "warning",
+								"import": "warning",
+								"important": "warning",
+								"known-properties": true,
+								"outline-none": "warning",
+								"overqualified-elements": "warning",
+								"qualified-headings": "warning",
+								"regex-selectors": "warning",
+								"rules-count": "warning",
+								"shorthand": "warning",
+								"star-property-hack": "warning",
+								"text-indent": "warning",
+								"underscore-property-hack": "warning",
+								"unique-headings": "warning",
+								"universal-selector": "warning",
+								"vendor-prefix": true,
+								"zero-units": "warning"
+							},
+							"gjslint_ignore":
+							[
+								110.0
+							],
+							"gjslint_options":
+							[
+							],
 							"incomplete_sync": null,
+							"javascript_linter": "jshint",
+							"jshint_options":
+							{
+								"browser": true,
+								"evil": true,
+								"regexdash": true,
+								"sub": true,
+								"trailing": true,
+								"wsh": true
+							},
+							"pep8": true,
+							"pep8_ignore":
+							[
+								"E501"
+							],
+							"perl_linter": "perlcritic",
+							"pyflakes_ignore":
+							[
+							],
+							"pyflakes_ignore_import_*": true,
+							"remote_loading": false,
+							"sublimelinter": true,
+							"sublimelinter_delay": 2.0,
+							"sublimelinter_disable":
+							[
+							],
+							"sublimelinter_executable_map":
+							{
+							},
+							"sublimelinter_fill_outlines": false,
+							"sublimelinter_gutter_marks": false,
+							"sublimelinter_mark_style": "outline",
+							"sublimelinter_notes": false,
+							"sublimelinter_objj_check_ascii": false,
+							"sublimelinter_popup_errors_on_save": false,
+							"sublimelinter_syntax_map":
+							{
+								"C++": "c",
+								"Python Django": "python",
+								"Ruby on Rails": "ruby"
+							},
+							"sublimelinter_wrap_find": true,
+							"synced": false,
 							"syntax": "Packages/Text/Plain text.tmLanguage"
 						},
 						"translation.x": 0.0,

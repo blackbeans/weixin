@@ -26,7 +26,7 @@ const (
 var pool *mongo.Pool
 
 func init() {
-	pool = mongo.NewDialPool("42.96.167.9:27018", 1000)
+	pool = mongo.NewDialPool("localhost:27018", 1000)
 }
 
 // func main() {
