@@ -523,7 +523,7 @@
 			"file": "src/weixin.go",
 			"settings":
 			{
-				"buffer_size": 6710,
+				"buffer_size": 6708,
 				"line_ending": "Unix"
 			}
 		},
@@ -973,15 +973,15 @@
 					"file": "src/weixin.go",
 					"settings":
 					{
-						"buffer_size": 6710,
+						"buffer_size": 6708,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								3471,
-								3471
+								433,
+								433
 							]
 						],
 						"settings":
@@ -1124,7 +1124,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 737.0,
+						"translation.y": 98.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
