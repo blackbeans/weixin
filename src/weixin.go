@@ -42,6 +42,8 @@ func main() {
 
 	http.HandleFunc("/forward", ForwardHandler)
 	http.ListenAndServe(":80", nil)
+
+	http.FileServer(http.Dir("/"))
 }
 
 func ForwardHandler(wr http.ResponseWriter, req *http.Request) {
@@ -158,14 +160,7 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 
 	locs := traverseQueryResult(cursor, 10)
 
-	idx := rand.Intn(len(locs))
-	loc := locs[idx]
-	resp := buildCoverPicMsg(msg.ReqMessage)
-	// fmt.Println(val)
-	shop := resp.Articles.Items[0]
-	desc := loc["description"].(map[string]interface{})
-	shop.Title = fmt.Sprintf("离你最近的餐馆 :%s(电话:%s)", loc["name"], desc["tel"])
-	shop.Description = fmt.Sprintf("地址:%s,%s,%s", loc["province"], loc["city"], loc["district"])
+	resp := wrapPicResponse(locs, msg.FromUserName, msg.ToUserName)
 
 	ch <- resp
 
@@ -193,31 +188,36 @@ func txtMessageProcess(msg entry.TxtRequest, ch chan interface{}) {
 		resp.ToUserName = msg.FromUserName
 		response = *resp
 	} else {
-		resp := &entry.PicResponse{}
-		items := make([]*entry.Item, 0)
+		response = wrapPicResponse(foods, msg.FromUserName, msg.ToUserName)
 
-		for _, m := range foods {
-
-			item := &entry.Item{}
-			item.Title = m["name"].(string)
-			item.PicUrl = m["img_url"].(string)
-			item.Url = m["link"].(string)
-			item.Description = m["name"].(string)
-			items = append(items, item)
-		}
-
-		art := &entry.Articles{}
-		art.Items = items
-		resp.Articles = art
-		resp.FromUserName = msg.ToUserName
-		resp.ToUserName = msg.FromUserName
-		resp.MsgType = "news"
-		resp.FuncFlag = 1
-		resp.CreateTime = time.Duration(time.Now().Unix())
-		resp.ArticleCount = len(foods)
-		response = resp
 	}
 	ch <- response
+}
+
+func wrapPicResponse(foods []mongo.M, touser string, fromuser string) *entry.PicResponse {
+	resp := &entry.PicResponse{}
+	items := make([]*entry.Item, 0)
+
+	for _, m := range foods {
+
+		item := &entry.Item{}
+		item.Title = m["name"].(string)
+		item.PicUrl = m["img_url"].(string)
+		item.Url = m["link"].(string)
+		item.Description = m["name"].(string)
+		items = append(items, item)
+	}
+
+	art := &entry.Articles{}
+	art.Items = items
+	resp.Articles = art
+	resp.FromUserName = touser
+	resp.ToUserName = fromuser
+	resp.MsgType = "news"
+	resp.FuncFlag = 1
+	resp.CreateTime = time.Duration(time.Now().Unix())
+	resp.ArticleCount = len(foods)
+	return resp
 }
 
 func query(limit int, code string) []mongo.M {

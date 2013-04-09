@@ -4,6 +4,22 @@
 		"selected_items":
 		[
 			[
+				"for",
+				"FormFile	multipart.File, *multipart.FileHeader, error ƒ"
+			],
+			[
+				"f",
+				"f	multipart.File ν"
+			],
+			[
+				"fie",
+				"FileSystem	interface ¡"
+			],
+			[
+				"File",
+				"FileServer	http.Handler ƒ"
+			],
+			[
 				"in",
 				"Intn	int ƒ"
 			],
@@ -112,10 +128,6 @@
 				"err	error ν"
 			],
 			[
-				"for",
-				"forwardurl	 Ɩ"
-			],
-			[
 				"newS",
 				"NewSingleHostReverseProxy	*httputil.ReverseProxy ƒ"
 			],
@@ -186,10 +198,6 @@
 			[
 				"a",
 				"Attr	string ƒ"
-			],
-			[
-				"f",
-				"Filter	goquery.Nodes ƒ"
 			],
 			[
 				"e",
@@ -326,10 +334,6 @@
 			[
 				"file",
 				"file	os.FileInfo ν"
-			],
-			[
-				"File",
-				"FileMode	uint32 ʈ"
 			],
 			[
 				"fil",
@@ -510,37 +514,19 @@
 			[
 				"Pri",
 				"Println	n int, err error ƒ"
-			],
-			[
-				"mus",
-				"music	 ν"
 			]
 		]
 	},
 	"buffers":
 	[
 		{
+			"contents": "package main\n\nimport (\n	\"crypto/sha1\"\n	\"encoding/xml\"\n	\"entry\"\n	\"fmt\"\n	\"github.com/garyburd/go-mongo/mongo\"\n	\"io/ioutil\"\n	\"log\"\n	\"math/rand\"\n	\"net/http\"\n	\"net/http/httputil\"\n	\"net/url\"\n	\"sort\"\n	\"time\"\n)\n\nconst (\n	basiurl    = \"http://redis.io/commands/\"\n	forwardurl = \"http://localhost:8080/\"\n	token      = \"betago\"\n	welcome    = \"欢迎使用美食助手应用，您可以属于希望的文字获得美食、发送地理位置可以查询附近餐馆哦！愿你在这里发现生活真正的意义~业务合作微信账号:blackbeans\"\n)\n\nvar pool *mongo.Pool\n\nfunc init() {\n	pool = mongo.NewDialPool(\"localhost:27018\", 1000)\n}\n\n// func main() {\n\n// 	msg := entry.LocRequest{}\n// 	msg.Location_X = 23.312\n// 	msg.Location_Y = 120.8\n// 	locMessageProcess(msg, nil)\n// }\n\nfunc main() {\n	http.HandleFunc(\"/weixin\", WexinHandler)\n\n	http.HandleFunc(\"/forward\", ForwardHandler)\n	http.ListenAndServe(\":80\", nil)\n\n	http.FileServer(http.Dir(\"/\"))\n}\n\nfunc ForwardHandler(wr http.ResponseWriter, req *http.Request) {\n	link, err := url.Parse(forwardurl)\n	if nil != err {\n		panic(err)\n	}\n	proxy := httputil.NewSingleHostReverseProxy(link)\n	proxy.ServeHTTP(wr, req)\n\n}\n\nfunc weixinValid(resp http.ResponseWriter, req *http.Request) {\n	signature := req.FormValue(\"signature\")\n	timestamp := req.FormValue(\"timestamp\")\n	nonce := req.FormValue(\"nonce\")\n	echostr := req.FormValue(\"echostr\")\n\n	vali := func() string {\n		strs := sort.StringSlice{token, timestamp, nonce}\n		sort.Strings(strs)\n		str := \"\"\n		for _, s := range strs {\n			str += s\n		}\n\n		h := sha1.New()\n		h.Write([]byte(str))\n		return fmt.Sprintf(\"%x\", h.Sum(nil))\n	}()\n\n	if vali == signature {\n		resp.Write([]byte(echostr))\n	} else {\n		resp.Write([]byte(\"\"))\n	}\n	return\n}\n\nfunc WexinHandler(resp http.ResponseWriter, req *http.Request) {\n\n	log.Println(\"method:\", req.Method)\n	if req.Method == \"GET\" {\n		weixinValid(resp, req)\n	} else {\n\n		data, err := ioutil.ReadAll(req.Body)\n		if nil != err {\n			log.Println(\"read body err:\", err)\n			return\n		}\n		log.Println(\"data:\", string(data))\n\n		request := &entry.ReqMessage{}\n		er := xml.Unmarshal(data, request)\n		if nil != er {\n			log.Println(\"decode body err:\", er)\n			return\n		}\n\n		event := request.Event\n		msgType := request.MsgType\n		ch := make(chan interface{})\n		defer close(ch)\n		if \"event\" == msgType && event == \"subscribe\" {\n			//添加关注事件\n			go subEventProcess(*request, ch)\n\n		} else if \"event\" == msgType && event == \"unsubscribe\" {\n			//取消订阅\n			go unsubEventProcess(*request, ch)\n\n		} else if \"location\" == msgType {\n			//地理位置\n			var msg entry.LocRequest\n			err := xml.Unmarshal(data, &msg)\n			if nil != err {\n				log.Println(\"decode txt request body err:\", err)\n				return\n			}\n\n			go locMessageProcess(msg, ch)\n\n		} else {\n			var msg entry.TxtRequest\n			err := xml.Unmarshal(data, &msg)\n			if nil != err {\n				log.Println(\"decode txt request body err:\", er)\n				return\n			}\n\n			go txtMessageProcess(msg, ch)\n		}\n\n		brespons, _ := xml.Marshal(<-ch)\n		log.Println(string(brespons))\n		resp.Write(brespons)\n	}\n}\n\nfunc locMessageProcess(msg entry.LocRequest, ch chan interface{}) {\n	conn, _ := pool.Get()\n	db := &mongo.Database{conn, \"search\", mongo.DefaultLastErrorCmd}\n	coll := db.C(\"resturant\")\n	cond := mongo.M{\"$near\": mongo.A{msg.Location_X, msg.Location_Y}}\n	fields := mongo.M{\"name\": 1, \"province\": 1, \"city\": 1, \"district\": 1, \"_id\": 0, \"description.tel\": 1}\n	cursor, err := coll.Find(mongo.M{\"geoloc\": cond}).Fields(fields).Limit(1).Cursor()\n	if nil != err {\n		log.Println(\"query mongo fail |\", err)\n		return\n	}\n\n	defer cursor.Close()\n\n	locs := traverseQueryResult(cursor, 10)\n\n	idx := rand.Intn(len(locs))\n	loc := locs[idx]\n	resp := buildCoverPicMsg(msg.ReqMessage)\n	// fmt.Println(val)\n	shop := resp.Articles.Items[0]\n	desc := loc[\"description\"].(map[string]interface{})\n	shop.Title = fmt.Sprintf(\"离你最近的餐馆 :%s(电话:%s)\", loc[\"name\"], desc[\"tel\"])\n	shop.Description = fmt.Sprintf(\"地址:%s,%s,%s\", loc[\"province\"], loc[\"city\"], loc[\"district\"])\n\n	ch <- resp\n\n}\n\nfunc subEventProcess(msg entry.ReqMessage, ch chan interface{}) {\n	resp := buildCoverPicMsg(msg)\n	ch <- resp\n}\n\nfunc unsubEventProcess(msg entry.ReqMessage, ch chan interface{}) {\n	resp := buildTxtMsg(\"感谢您的关注，希望您下次继续光顾本应用^_^!\", \"text\")\n	resp.FromUserName = msg.ToUserName\n	resp.ToUserName = msg.FromUserName\n	ch <- *resp\n}\n\nfunc txtMessageProcess(msg entry.TxtRequest, ch chan interface{}) {\n	code := msg.Content\n	foods := query(10, code)\n	var response interface{}\n	if len(foods) <= 0 {\n		resp := buildTxtMsg(\"很遗憾你是吃货，没找到你的美食,你可以搜索爆米花!\", msg.MsgType)\n		resp.FromUserName = msg.ToUserName\n		resp.ToUserName = msg.FromUserName\n		response = *resp\n	} else {\n		resp := &entry.PicResponse{}\n		items := make([]*entry.Item, 0)\n\n		for _, m := range foods {\n\n			item := &entry.Item{}\n			item.Title = m[\"name\"].(string)\n			item.PicUrl = m[\"img_url\"].(string)\n			item.Url = m[\"link\"].(string)\n			item.Description = m[\"name\"].(string)\n			items = append(items, item)\n		}\n\n		art := &entry.Articles{}\n		art.Items = items\n		resp.Articles = art\n		resp.FromUserName = msg.ToUserName\n		resp.ToUserName = msg.FromUserName\n		resp.MsgType = \"news\"\n		resp.FuncFlag = 1\n		resp.CreateTime = time.Duration(time.Now().Unix())\n		resp.ArticleCount = len(foods)\n		response = resp\n	}\n	ch <- response\n}\n\nfunc query(limit int, code string) []mongo.M {\n	conn, _ := pool.Get()\n	db := &mongo.Database{conn, \"meishi\", mongo.DefaultLastErrorCmd}\n	coll := db.C(\"foods\")\n	cursor, err := coll.Find(mongo.M{\"name\": mongo.M{\"$regex\": code}}).Limit(limit).Cursor()\n	if nil != err {\n		log.Println(\"query mongo fail |\", err)\n		return nil\n	}\n\n	defer cursor.Close()\n\n	return traverseQueryResult(cursor, limit)\n}\n\nfunc traverseQueryResult(cursor mongo.Cursor, limit int) []mongo.M {\n	foods := make([]mongo.M, 0)\n	i := 0\n\n	for cursor.HasNext() && i < limit {\n		var m mongo.M\n		err := cursor.Next(&m)\n		if nil != err {\n			log.Println(\"decode mongo map fail|\", err)\n			continue\n		}\n\n		foods = append(foods, m)\n		i++\n	}\n	return foods\n}\n\nfunc buildTxtMsg(content string, msgType string) *entry.TxtResponse {\n	resp := &entry.TxtResponse{}\n	resp.MsgType = msgType\n	resp.FuncFlag = 0\n	resp.Content = content\n	resp.CreateTime = time.Duration(time.Now().Unix())\n	return resp\n}\n\nfunc buildCoverPicMsg(msg entry.ReqMessage) entry.PicResponse {\n	resp := entry.PicResponse{}\n	items := make([]*entry.Item, 0)\n\n	foods := query(10, \"豆腐\")\n\n	if len(foods) >= 1 {\n		idx := rand.Intn(len(foods))\n		m := foods[idx]\n		item := &entry.Item{}\n		item.Title = m[\"name\"].(string)\n		item.PicUrl = m[\"img_url\"].(string)\n		item.Url = m[\"link\"].(string)\n		item.Description = welcome\n		items = append(items, item)\n	}\n\n	art := &entry.Articles{}\n	art.Items = items\n	resp.Articles = art\n	resp.FromUserName = msg.ToUserName\n	resp.ToUserName = msg.FromUserName\n	resp.MsgType = \"news\"\n	resp.FuncFlag = 1\n	resp.CreateTime = time.Duration(time.Now().Unix())\n	resp.ArticleCount = 1\n\n	return resp\n}\n",
 			"file": "src/weixin.go",
+			"file_size": 7038,
+			"file_write_time": 1365315622000000,
 			"settings":
 			{
-				"buffer_size": 6708,
-				"line_ending": "Unix"
-			}
-		},
-		{
-			"contents": "mongod --dbpath /home/server/mongo/data --port 27018 --logpath /home/server/mongolog/mongo.log\n\n\nmongorestore -host localhost:27018 -d search --directoryperdb  resturant/search/\n\ndb.Account.renameCollection",
-			"settings":
-			{
-				"buffer_size": 206,
-				"line_ending": "Unix",
-				"name": "mongod --dbpath /home/server/mongo/data --port 270"
-			}
-		},
-		{
-			"file": "src/entry/entry.go",
-			"settings":
-			{
-				"buffer_size": 999,
+				"buffer_size": 6741,
 				"line_ending": "Unix"
 			}
 		}
@@ -551,6 +537,10 @@
 		"height": 392.0,
 		"selected_items":
 		[
+			[
+				"re",
+				"CTags: Rebuild Tags"
+			],
 			[
 				"git comm",
 				"Git: Commit"
@@ -614,10 +604,6 @@
 			[
 				"git stat",
 				"Git: Status"
-			],
-			[
-				"re",
-				"CTags: Rebuild Tags"
 			],
 			[
 				"rei",
@@ -766,6 +752,9 @@
 	"file_history":
 	[
 		"/Users/Xmx/workspace/google/weixin/src/entry/entry.go",
+		"/usr/local/go/src/pkg/net/http/doc.go",
+		"/usr/local/go/src/pkg/net/http/server.go",
+		"/Users/Xmx/workspace/google/weixin/src/wxid.jpg",
 		"/Users/Xmx/workspace/google/weixin/src/start.sh",
 		"/Users/Xmx/workspace/google/weixin/src/weixin.go",
 		"/Users/Xmx/workspace/google/weixin/src/main.go",
@@ -798,7 +787,6 @@
 		"/usr/local/go/src/pkg/net/tcpsock.go",
 		"/usr/local/go/src/pkg/net/tcpsock_posix.go",
 		"/usr/local/go/src/pkg/os/file.go",
-		"/usr/local/go/src/pkg/net/http/server.go",
 		"/usr/local/go/src/pkg/os/file_plan9.go",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/main/demo.go",
 		"/usr/local/go/src/pkg/net/rpc/server.go",
@@ -809,7 +797,6 @@
 		"/Users/Xmx/Library/Application Support/Sublime Text 2/Packages/CTags/CTags.sublime-settings",
 		"/Users/Xmx/workspace/google/cgss/src/com.blackbeans/imentry/entry.go",
 		"/Users/Xmx/Library/Application Support/Sublime Text 2/Packages/User/CTags.sublime-settings",
-		"/usr/local/go/src/pkg/net/http/doc.go",
 		"/usr/local/go/src/pkg/fmt/doc.go",
 		"/usr/local/go/src/pkg/builtin/builtin.go",
 		"/usr/local/go/src/pkg/encoding/json/bench_test.go",
@@ -897,6 +884,8 @@
 		"case_sensitive": false,
 		"find_history":
 		[
+			"FileSystem",
+			"Dir",
 			"	\n",
 			"http.HandleFunc(\"/\", WelcomeHandler)",
 			"							",
@@ -973,15 +962,15 @@
 					"file": "src/weixin.go",
 					"settings":
 					{
-						"buffer_size": 6708,
+						"buffer_size": 6741,
 						"regions":
 						{
 						},
 						"selection":
 						[
 							[
-								433,
-								433
+								1207,
+								1207
 							]
 						],
 						"settings":
@@ -1124,328 +1113,7 @@
 							"translate_tabs_to_spaces": false
 						},
 						"translation.x": 0.0,
-						"translation.y": 98.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 1,
-					"settings":
-					{
-						"buffer_size": 206,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								190,
-								206
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"auto_name": "mongod --dbpath /home/server/mongo/data --port 270",
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"incomplete_sync": null,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"remote_loading": false,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"synced": false,
-							"syntax": "Packages/Text/Plain text.tmLanguage"
-						},
-						"translation.x": 0.0,
-						"translation.y": 0.0,
-						"zoom_level": 1.0
-					},
-					"type": "text"
-				},
-				{
-					"buffer": 2,
-					"file": "src/entry/entry.go",
-					"settings":
-					{
-						"buffer_size": 999,
-						"regions":
-						{
-						},
-						"selection":
-						[
-							[
-								0,
-								999
-							]
-						],
-						"settings":
-						{
-							"annotations":
-							[
-								"TODO",
-								"README",
-								"FIXME"
-							],
-							"bh_regions":
-							[
-								"bh_regex",
-								"bh_regex_center",
-								"bh_regex_open",
-								"bh_regex_close",
-								"bh_double_quote",
-								"bh_double_quote_center",
-								"bh_double_quote_open",
-								"bh_double_quote_close",
-								"bh_square",
-								"bh_square_center",
-								"bh_square_open",
-								"bh_square_close",
-								"bh_angle",
-								"bh_angle_center",
-								"bh_angle_open",
-								"bh_angle_close",
-								"bh_curly",
-								"bh_curly_center",
-								"bh_curly_open",
-								"bh_curly_close",
-								"bh_default",
-								"bh_default_center",
-								"bh_default_open",
-								"bh_default_close",
-								"bh_unmatched",
-								"bh_unmatched_center",
-								"bh_unmatched_open",
-								"bh_unmatched_close",
-								"bh_round",
-								"bh_round_center",
-								"bh_round_open",
-								"bh_round_close",
-								"bh_tag",
-								"bh_tag_center",
-								"bh_tag_open",
-								"bh_tag_close",
-								"bh_single_quote",
-								"bh_single_quote_center",
-								"bh_single_quote_open",
-								"bh_single_quote_close"
-							],
-							"csslint_options":
-							{
-								"adjoining-classes": "warning",
-								"box-model": true,
-								"box-sizing": "warning",
-								"compatible-vendor-prefixes": "warning",
-								"display-property-grouping": true,
-								"duplicate-background-images": "warning",
-								"duplicate-properties": true,
-								"empty-rules": true,
-								"errors": true,
-								"fallback-colors": "warning",
-								"floats": "warning",
-								"font-faces": "warning",
-								"font-sizes": "warning",
-								"gradients": "warning",
-								"ids": "warning",
-								"import": "warning",
-								"important": "warning",
-								"known-properties": true,
-								"outline-none": "warning",
-								"overqualified-elements": "warning",
-								"qualified-headings": "warning",
-								"regex-selectors": "warning",
-								"rules-count": "warning",
-								"shorthand": "warning",
-								"star-property-hack": "warning",
-								"text-indent": "warning",
-								"underscore-property-hack": "warning",
-								"unique-headings": "warning",
-								"universal-selector": "warning",
-								"vendor-prefix": true,
-								"zero-units": "warning"
-							},
-							"gjslint_ignore":
-							[
-								110.0
-							],
-							"gjslint_options":
-							[
-							],
-							"incomplete_sync": null,
-							"javascript_linter": "jshint",
-							"jshint_options":
-							{
-								"browser": true,
-								"evil": true,
-								"regexdash": true,
-								"sub": true,
-								"trailing": true,
-								"wsh": true
-							},
-							"pep8": true,
-							"pep8_ignore":
-							[
-								"E501"
-							],
-							"perl_linter": "perlcritic",
-							"pyflakes_ignore":
-							[
-							],
-							"pyflakes_ignore_import_*": true,
-							"remote_loading": false,
-							"sublimelinter": true,
-							"sublimelinter_delay": 2.0,
-							"sublimelinter_disable":
-							[
-							],
-							"sublimelinter_executable_map":
-							{
-							},
-							"sublimelinter_fill_outlines": false,
-							"sublimelinter_gutter_marks": false,
-							"sublimelinter_mark_style": "outline",
-							"sublimelinter_notes": false,
-							"sublimelinter_objj_check_ascii": false,
-							"sublimelinter_popup_errors_on_save": false,
-							"sublimelinter_syntax_map":
-							{
-								"C++": "c",
-								"Python Django": "python",
-								"Ruby on Rails": "ruby"
-							},
-							"sublimelinter_wrap_find": true,
-							"synced": false,
-							"syntax": "Packages/GoSublime/GoSublime.tmLanguage",
-							"translate_tabs_to_spaces": false
-						},
-						"translation.x": 0.0,
-						"translation.y": 404.0,
+						"translation.y": 697.0,
 						"zoom_level": 1.0
 					},
 					"type": "text"
@@ -1505,6 +1173,10 @@
 		"height": 100.0
 	},
 	"output.9o:///Users/Xmx/workspace/google/weixin/src/entry":
+	{
+		"height": 100.0
+	},
+	"output.GoSublime-source-output":
 	{
 		"height": 100.0
 	},
