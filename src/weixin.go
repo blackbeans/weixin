@@ -211,8 +211,8 @@ func wrapPicResponse(foods []mongo.M, touser string, fromuser string) *entry.Pic
 	art := &entry.Articles{}
 	art.Items = items
 	resp.Articles = art
-	resp.FromUserName = touser
-	resp.ToUserName = fromuser
+	resp.FromUserName = fromuser
+	resp.ToUserName = touser
 	resp.MsgType = "news"
 	resp.FuncFlag = 1
 	resp.CreateTime = time.Duration(time.Now().Unix())
@@ -266,7 +266,7 @@ func buildCoverPicMsg(msg entry.ReqMessage) entry.PicResponse {
 	resp := entry.PicResponse{}
 	items := make([]*entry.Item, 0)
 
-	foods := query(10, "豆腐")
+	foods := query(10, "麻辣")
 
 	if len(foods) >= 1 {
 		idx := rand.Intn(len(foods))
