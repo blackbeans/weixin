@@ -165,7 +165,9 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 		item.Title = m["name"].(string)
 		item.PicUrl = "#"
 		item.Url = "#"
-		item.Description = m["district"].(string) + ",电话:" + m["description.tel"].(string)
+		desc := m["description"].(map[string]interface{})
+		item.Description = m["district"].(string) + ",电话:" + desc["tel"].(string)
+
 		return item
 	})
 
