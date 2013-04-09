@@ -41,9 +41,14 @@ func main() {
 	http.HandleFunc("/weixin", WexinHandler)
 
 	http.HandleFunc("/forward", ForwardHandler)
+	http.HandleFunc("/detail", DetailHandler)
 	http.ListenAndServe(":80", nil)
 
 	http.FileServer(http.Dir("/"))
+}
+
+func DetailHandler(wr http.ResponseWriter, req *http.Request) {
+
 }
 
 func ForwardHandler(wr http.ResponseWriter, req *http.Request) {
@@ -164,7 +169,7 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 		item := &entry.Item{}
 		item.Title = m["name"].(string)
 		item.PicUrl = "http://i1.s1.dpfile.com/pc/5ce8000b7eec1921db5b525ae5b8af88(700x700)/thumb.jpg"
-		item.Url = "#"
+		item.Url = "http://www.dianping.com/search/keyword/2/10_" + item.Title
 		desc := m["description"].(map[string]interface{})
 		item.Description = m["district"].(string) + ",电话:" + desc["tel"].(string)
 
