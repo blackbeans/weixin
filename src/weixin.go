@@ -17,10 +17,12 @@ import (
 )
 
 const (
+	uri        = "localhost"
 	basiurl    = "http://redis.io/commands/"
 	forwardurl = "http://localhost:8080/"
 	token      = "betago"
 	welcome    = "欢迎使用美食助手应用，您可以属于希望的文字获得美食、发送地理位置可以查询附近餐馆哦！愿你在这里发现生活真正的意义~业务合作微信账号:blackbeans"
+	warn       = "<img src=\"http://mp.weixin.qq.com/cgi-bin/getimgdata?msgid=10000011&mode=small&source=file&fileId=10000011&ow=1896439834\"/>"
 )
 
 var pool *mongo.Pool
@@ -39,15 +41,16 @@ func init() {
 
 func main() {
 	http.HandleFunc("/weixin", WexinHandler)
-
 	http.HandleFunc("/forward", ForwardHandler)
 	http.HandleFunc("/detail", DetailHandler)
-	http.ListenAndServe(":80", nil)
+	http.ListenAndServe(":8080", nil)
 
-	http.FileServer(http.Dir("/"))
 }
 
 func DetailHandler(wr http.ResponseWriter, req *http.Request) {
+	name := req.FormValue("name")
+	wr.Header().Set("content-type", "text/html")
+	wr.Write([]byte(name + ",正在修建中...." + warn))
 
 }
 
@@ -169,7 +172,7 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 		item := &entry.Item{}
 		item.Title = m["name"].(string)
 		item.PicUrl = "http://i1.s1.dpfile.com/pc/5ce8000b7eec1921db5b525ae5b8af88(700x700)/thumb.jpg"
-		item.Url = "http://www.dianping.com/search/keyword/2/10_" + item.Title
+		item.Url = "http://" + uri + ":80/detail?name=" + item.Title
 		desc := m["description"].(map[string]interface{})
 		item.Description = m["district"].(string) + ",电话:" + desc["tel"].(string)
 
