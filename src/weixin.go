@@ -160,7 +160,14 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 
 	locs := traverseQueryResult(cursor, 10)
 
-	resp := wrapPicResponse(locs, msg.FromUserName, msg.ToUserName)
+	resp := wrapPicResponse(locs, msg.FromUserName, msg.ToUserName, func(m mongo.M) *entry.Item {
+		item := &entry.Item{}
+		item.Title = m["name"].(string)
+		item.PicUrl = "#"
+		item.Url = "#"
+		item.Description = m["district"].(string) + ",电话:" + m["description.tel"].(string)
+		return item
+	})
 
 	ch <- resp
 
@@ -188,24 +195,27 @@ func txtMessageProcess(msg entry.TxtRequest, ch chan interface{}) {
 		resp.ToUserName = msg.FromUserName
 		response = *resp
 	} else {
-		response = wrapPicResponse(foods, msg.FromUserName, msg.ToUserName)
+		response = wrapPicResponse(foods, msg.FromUserName, msg.ToUserName, func(m mongo.M) *entry.Item {
+			item := &entry.Item{}
+			item.Title = m["name"].(string)
+			item.PicUrl = m["img_url"].(string)
+			item.Url = m["link"].(string)
+			item.Description = m["name"].(string)
+			return item
+		})
 
 	}
 	ch <- response
 }
 
-func wrapPicResponse(foods []mongo.M, touser string, fromuser string) *entry.PicResponse {
+func wrapPicResponse(foods []mongo.M, touser string, fromuser string,
+	wrap func(item mongo.M) *entry.Item) *entry.PicResponse {
 	resp := &entry.PicResponse{}
 	items := make([]*entry.Item, 0)
 
 	for _, m := range foods {
 
-		item := &entry.Item{}
-		item.Title = m["name"].(string)
-		item.PicUrl = m["img_url"].(string)
-		item.Url = m["link"].(string)
-		item.Description = m["name"].(string)
-		items = append(items, item)
+		items = append(items, wrap(m))
 	}
 
 	art := &entry.Articles{}
@@ -266,7 +276,7 @@ func buildCoverPicMsg(msg entry.ReqMessage) entry.PicResponse {
 	resp := entry.PicResponse{}
 	items := make([]*entry.Item, 0)
 
-	foods := query(10, "麻辣")
+	foods := query(10, "水果")
 
 	if len(foods) >= 1 {
 		idx := rand.Intn(len(foods))
