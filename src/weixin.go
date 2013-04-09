@@ -150,7 +150,7 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 	coll := db.C("resturant")
 	cond := mongo.M{"$near": mongo.A{msg.Location_X, msg.Location_Y}}
 	fields := mongo.M{"name": 1, "province": 1, "city": 1, "district": 1, "_id": 0, "description.tel": 1}
-	cursor, err := coll.Find(mongo.M{"geoloc": cond}).Fields(fields).Limit(1).Cursor()
+	cursor, err := coll.Find(mongo.M{"geoloc": cond}).Fields(fields).Limit(10).Cursor()
 	if nil != err {
 		log.Println("query mongo fail |", err)
 		return
@@ -163,7 +163,7 @@ func locMessageProcess(msg entry.LocRequest, ch chan interface{}) {
 	resp := wrapPicResponse(locs, msg.FromUserName, msg.ToUserName, func(m mongo.M) *entry.Item {
 		item := &entry.Item{}
 		item.Title = m["name"].(string)
-		item.PicUrl = "#"
+		item.PicUrl = "http://i1.s1.dpfile.com/pc/5ce8000b7eec1921db5b525ae5b8af88(700x700)/thumb.jpg"
 		item.Url = "#"
 		desc := m["description"].(map[string]interface{})
 		item.Description = m["district"].(string) + ",电话:" + desc["tel"].(string)
