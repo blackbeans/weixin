@@ -43,12 +43,13 @@ func main() {
 	http.HandleFunc("/weixin", WexinHandler)
 	http.HandleFunc("/forward", ForwardHandler)
 	http.HandleFunc("/detail", DetailHandler)
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":80", nil)
 
 }
 
 func DetailHandler(wr http.ResponseWriter, req *http.Request) {
 	name := req.FormValue("name")
+	log.Println("link name :", name)
 	wr.Header().Set("content-type", "text/html")
 	wr.Write([]byte(name + ",正在修建中...." + warn))
 
