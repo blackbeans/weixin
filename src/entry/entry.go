@@ -61,3 +61,8 @@ type Articles struct {
 	// Articles xml.Name `xml:"Articles"`
 	Items []*Item `xml:"item"`
 }
+
+type test struct {
+	// Articles xml.Name `xml:"Articles"`
+	Items []*Item `xml:"item"`
+}
