@@ -1,5 +1,6 @@
 package main
 
+.go这个又是什么
 import (
 	"crypto/sha1"
 	"encoding/xml"
